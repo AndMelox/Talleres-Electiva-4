@@ -17,10 +17,9 @@ print("=" * 70)
 print(f"Cantidad de estudiantes cargados: {len(mydata)}\n")
 
 # PUNTO 2: Nota promedio por asignatura
-# Se usa un diccionario: clave = nombre de la asignatura,
-# valor = lista con todas las notas registradas para esa asignatura
-# (sin importar si el estudiante la retiro o no, porque el enunciado
-# no pide excluir retiros en este punto -- eso solo se pide en el punto 3).
+# Armamos un diccionario donde la llave es el nombre de la asignatura
+# y el valor es una lista con todas las notas de esa asignatura.
+# No quitamos las retiradas aqui porque eso solo lo pide el punto 3.
 
 notas_por_asignatura = {}
 
@@ -197,8 +196,8 @@ print("rstrip()  ->", "'" + "  hola mundo   ".rstrip() + "'")
 # index(): igual que find(), pero lanza ValueError si no encuentra la subcadena
 print("index()   ->", texto_demo.index("datos"))
 
-# casefold(): similar a lower(), pero mas agresivo para comparaciones
-# (util para caracteres especiales de otros idiomas, ej. la 'ß' alemana)
+# casefold() es como lower() pero mas estricto, sirve mejor cuando se
+# comparan cadenas que pueden traer tildes o caracteres especiales
 print("casefold() ->", "GESTIÓN".casefold())
 
 # Dividir una frase en palabras, en letras, reemplazar y unir
@@ -294,10 +293,39 @@ print("=" * 70)
 #   inmutable, un frozenset SI puede usarse dentro de otro set o como
 #   clave de diccionario (un set normal no puede).
 
+# Demostración
+conjunto_mutable = {1, 2, 3}
+conjunto_inmutable = frozenset([1, 2, 3])
+
+print("set original      ->", conjunto_mutable)
+print("frozenset original->", conjunto_inmutable)
+
+# Un set SI permite agregar elementos
+conjunto_mutable.add(4)
+print("set despues de add(4) ->", conjunto_mutable)
+
+# Un frozenset NO permite agregar ni quitar elementos (no tiene add/remove)
+try:
+    conjunto_inmutable.add(4)
+except AttributeError as error:
+    print("Error al intentar modificar el frozenset ->", error)
+
+# Por ser inmutable (hashable), un frozenset SI puede usarse como
+# clave de un diccionario o guardarse dentro de otro set.
+# Un set normal NO puede, porque no es hashable.
+diccionario_con_frozenset_como_clave = {conjunto_inmutable: "conjunto congelado"}
+print("Diccionario con frozenset como clave ->", diccionario_con_frozenset_como_clave)
+
+try:
+    diccionario_con_set_como_clave = {conjunto_mutable: "esto va a fallar"}
+except TypeError as error:
+    print("Error al usar un set normal como clave ->", error)
+
 conj_a = {1, 2, 3, 4}
 conj_b = {3, 4, 5, 6}
 
-# intersection_update(): actualiza conj_a dejando solo lo comun con conj_b
+# intersection_update() modifica el conjunto sobre el que se llama, por eso
+# aqui usamos una copia (copia_a) y asi no dañamos conj_a para los demas ejemplos
 copia_a = conj_a.copy()
 copia_a.intersection_update(conj_b)
 print("intersection_update() ->", copia_a)
@@ -305,7 +333,8 @@ print("intersection_update() ->", copia_a)
 # isdisjoint(): True si los conjuntos NO tienen elementos en comun
 print("isdisjoint()          ->", conj_a.isdisjoint({10, 11}))
 
-# issubset(): True si todos los elementos de conj_a estan en el otro conjunto
+# issubset(): True si todos los elementos del conjunto que llama el metodo
+# estan dentro del otro (aqui probamos si {1,2} esta dentro de conj_a)
 print("issubset()            ->", {1, 2}.issubset(conj_a))
 
 # issuperset(): True si conj_a contiene todos los elementos del otro
@@ -324,7 +353,8 @@ print("remove(2)             ->", copia_remove)
 # symmetric_difference(): elementos que estan en uno u otro, pero NO en ambos
 print("symmetric_difference()->", conj_a.symmetric_difference(conj_b))
 
-# symmetric_difference_update(): igual, pero modifica conj_a directamente
+# symmetric_difference_update() hace lo mismo pero modifica el conjunto
+# que la llama; usamos una copia (copia_sd) para no alterar conj_a
 copia_sd = conj_a.copy()
 copia_sd.symmetric_difference_update(conj_b)
 print("symmetric_diff_update()->", copia_sd)
@@ -332,7 +362,8 @@ print("symmetric_diff_update()->", copia_sd)
 # union(): todos los elementos de ambos conjuntos, sin repetidos
 print("union()               ->", conj_a.union(conj_b))
 
-# update(): agrega a conj_a todos los elementos de conj_b (como un "append" masivo)
+# update() agrega al conjunto que la llama todos los elementos del otro;
+# usamos una copia (copia_update) para no tocar conj_a directamente
 copia_update = conj_a.copy()
 copia_update.update(conj_b)
 print("update()              ->", copia_update)
